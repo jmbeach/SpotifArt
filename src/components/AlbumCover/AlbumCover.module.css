@@ -1,0 +1,19 @@
+.AlbumCover {
+    width: 100%;
+    text-align: center;
+}
+
+.AlbumCoverContainer {
+    width: 100%;
+    text-align: center;
+}
+
+@media (min-width: 500px) {
+    .AlbumCoverContainer {
+        padding-top: 50px;
+    }
+
+    .AlbumCover {
+        max-width: 50%;
+    }
+}

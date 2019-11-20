@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classes from './AlbumCover.module.css';
 
 const AlbumCover = props => {
   const { albumId, albumImg } = props;
   return (
-    <div className="AlbumCover" data-id={albumId}>
-      <img src={albumImg} alt="" />
+    <div className={classes.AlbumCoverContainer} data-id={albumId}>
+      <img className={classes.AlbumCover} src={albumImg} alt="" />
     </div>
   );
 };

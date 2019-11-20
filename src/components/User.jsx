@@ -23,15 +23,7 @@ class User extends Component {
     const { user } = this.props;
     return (
       <div className="User">
-        {user ? (
-          <div className="User__info">
-            <img src={user.images[0].url} alt="" />
-            <h4>{user.display_name}</h4>
-            <button onClick={this.handleLogout} type="button">
-              Logout
-            </button>
-          </div>
-        ) : (
+        {user ? null : (
           <div className="User__logged-out">
             <button onClick={this.handleLogin} type="button">
               Login
