@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import * as Vibrant from 'node-vibrant';
 
 import AlbumCover from './AlbumCover/AlbumCover';
 import AlbumMeta from './AlbumMeta/AlbumMeta';
@@ -20,8 +21,11 @@ const Login = () => {
 
 class App extends Component {
   state = {
-    user: null,
+    albumColor: null,
+    titleColor: null,
+    progressColor: null,
     track: null,
+    user: null,
   };
 
   constructor() {
@@ -30,9 +34,25 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.loadSpotifyData();
+    setInterval(this.loadSpotifyData, 500);
+  }
+
+  handleColorChanged = (err, palette) => {
+    document.getElementsByTagName('body')[0].style.backgroundColor =
+      palette.DarkMuted.hex;
+    this.setState({
+      albumColor: palette.Vibrant.hex,
+      progressColor: palette.Vibrant.hex,
+      titleColor: palette.LightMuted.hex,
+    });
+  };
+
+  loadSpotifyData = () => {
+    const cachedTrack = Spotify.getFromCache('track');
     this.setState({
       user: Spotify.getFromCache('user'),
-      track: Spotify.getFromCache('track'),
+      track: cachedTrack,
     });
 
     if (spotify.token) {
@@ -44,7 +64,13 @@ class App extends Component {
         this.setState({ track });
       });
     }
-  }
+    if (!cachedTrack) {
+      return;
+    }
+    Vibrant.from(cachedTrack.item.album.images[0].url).getPalette(
+      this.handleColorChanged
+    );
+  };
 
   handleLogout() {
     spotify.logout();
@@ -55,7 +81,7 @@ class App extends Component {
   }
 
   render() {
-    const { user, track } = this.state;
+    const { albumColor, user, track, titleColor, progressColor } = this.state;
     let artists;
     if (track) {
       artists = track.item.artists.map(artist => artist.name);
@@ -71,11 +97,14 @@ class App extends Component {
                 albumImg={track.item.album.images[0].url}
               />
               <AlbumMeta
-                title={track.item.name}
                 album={track.item.album.name}
+                albumColor={albumColor}
                 artist={artists}
                 current={track.progress_ms}
                 length={track.item.duration_ms}
+                progressColor={progressColor}
+                title={track.item.name}
+                titleColor={titleColor}
               />
             </div>
           )}
