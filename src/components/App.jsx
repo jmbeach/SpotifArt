@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 
-import AlbumCover from './AlbumCover';
-import AlbumMeta from './AlbumMeta';
+import AlbumCover from './AlbumCover/AlbumCover';
+import AlbumMeta from './AlbumMeta/AlbumMeta';
 import Spotify from '../lib/spotify';
 import User from './User';
 

@@ -1,18 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classes from './TimeBar.module.css';
 
 const TimeBar = props => {
   const { current, total } = props;
+  const pct = `${(current / total) * 100}%`;
   return (
-    <div>
-      <input
-        type="range"
-        name="time"
-        id="time"
-        value={current}
-        max={total}
-        readOnly
-      />
+    <div className={classes.TimeBarContainer}>
+      <div className={classes.TimeBar}>
+        <div className={classes.Progress} style={{ width: pct }} />
+      </div>
     </div>
   );
 };
