@@ -22,7 +22,7 @@
 
 @media (min-width: 500px) {
     .TimeBarContainer {
-        margin-top: 0;
+        margin-top: 15px;
         order: 2;
     }
 
