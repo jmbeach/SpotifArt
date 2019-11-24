@@ -6,6 +6,7 @@
 .AlbumMeta {
     margin-top: 10px;
     margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.3);
 }
 
 .Artist {
@@ -25,7 +26,8 @@
 
 .MetaContainer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    text-align: center;
     justify-content: space-around;
     flex-wrap: wrap;
     align-content: center;
@@ -39,8 +41,44 @@
 
 @media (min-width: 500px) {
     .MetaContainer {
-        flex-direction: column;
-        text-align: center;
         order: 1;
+    }
+}
+
+@media (max-height: 500px) {
+    .AlbumMeta {
+        margin-right: 10px;
+    }
+
+    .Artist {
+        margin-right: 10px;
+    }
+
+    .Break {
+        display: none;
+    }
+
+    .MetaContainer {
+        align-content: flex-end;
+        align-items: flex-start;
+        background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%);
+        bottom: 0;
+        height: 100%;
+        justify-content: flex-end;
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        text-align: left;
+        top: 0;
+        width: 100%;
+    }
+
+    .MetaContainer:hover {
+        opacity: 1;
+    }
+
+    .Title {
+        margin-right: 10px;
     }
 }
