@@ -46,21 +46,39 @@
 }
 
 @media (max-height: 500px) {
+    .AlbumMeta {
+        margin-right: 10px;
+    }
+
+    .Artist {
+        margin-right: 10px;
+    }
+
+    .Break {
+        display: none;
+    }
+
     .MetaContainer {
+        align-content: flex-end;
+        align-items: flex-start;
+        background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%);
+        bottom: 0;
+        height: 100%;
+        justify-content: flex-end;
+        left: 0;
         opacity: 0;
         position: absolute;
-        height: 100%;
-        top: 0;
-        bottom: 0;
-        left: 0;
         right: 0;
         text-align: left;
+        top: 0;
         width: 100%;
-        background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%);
     }
 
     .MetaContainer:hover {
         opacity: 1;
-        display: block;
+    }
+
+    .Title {
+        margin-right: 10px;
     }
 }
