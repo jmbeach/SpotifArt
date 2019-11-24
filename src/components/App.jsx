@@ -64,6 +64,8 @@ class App extends Component {
       });
 
       spotify.getCurrentTrack().then(track => {
+        // TODO: set track image to a "song not playing image"
+        if (!track) return;
         this.setState({ track });
       });
     }
