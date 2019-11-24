@@ -39,8 +39,11 @@ class App extends Component {
   }
 
   handleColorChanged = (err, palette) => {
-    document.getElementsByTagName('body')[0].style.backgroundColor =
-      palette.DarkMuted.hex;
+    const vibrant = palette.Vibrant;
+    const startingRgb = `rgba(${vibrant.r},${vibrant.g},${vibrant.b},0.4)`;
+    const endingRgb = `rgba(${vibrant.r},${vibrant.g},${vibrant.b},1)`;
+    const background = `linear-gradient(0deg, ${startingRgb} 0%, ${endingRgb} 100%)`;
+    document.getElementsByTagName('body')[0].style.background = background;
     this.setState({
       albumColor: palette.Vibrant.hex,
       progressColor: palette.Vibrant.hex,

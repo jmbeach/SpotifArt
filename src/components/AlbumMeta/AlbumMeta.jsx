@@ -12,15 +12,11 @@ function AlbumMeta(props) {
     length,
     progressColor,
     title,
-    titleColor,
   } = props;
   const albumStyle = {};
   const titleStyle = {};
   if (albumColor) {
     albumStyle.color = albumColor;
-  }
-  if (titleColor) {
-    titleStyle.color = titleColor;
   }
 
   return (
@@ -48,7 +44,6 @@ function AlbumMeta(props) {
 AlbumMeta.defaultProps = {
   albumColor: null,
   progressColor: null,
-  titleColor: null,
 };
 
 AlbumMeta.propTypes = {
@@ -59,7 +54,6 @@ AlbumMeta.propTypes = {
   length: PropTypes.number.isRequired,
   progressColor: PropTypes.string,
   title: PropTypes.string.isRequired,
-  titleColor: PropTypes.string,
 };
 
 export default AlbumMeta;
