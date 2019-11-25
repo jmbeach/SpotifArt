@@ -39,6 +39,7 @@ class App extends Component {
   }
 
   handleColorChanged = (err, palette) => {
+    if (!palette) return;
     const vibrant = palette.Vibrant;
     const startingRgb = `rgba(${vibrant.r},${vibrant.g},${vibrant.b},0.4)`;
     const endingRgb = `rgba(${vibrant.r},${vibrant.g},${vibrant.b},1)`;
@@ -69,7 +70,7 @@ class App extends Component {
         this.setState({ track });
       });
     }
-    if (!cachedTrack) {
+    if (!cachedTrack || !cachedTrack.item) {
       return;
     }
     Vibrant.from(cachedTrack.item.album.images[0].url).getPalette(
@@ -89,8 +90,21 @@ class App extends Component {
     const { albumColor, user, track, titleColor, progressColor } = this.state;
     let artists;
     if (track) {
-      artists = track.item.artists.map(artist => artist.name);
-      artists = artists.join(', ');
+      if (track.item) {
+        artists = track.item.artists.map(artist => artist.name);
+        artists = artists.join(', ');
+      } else {
+        track.item = {
+          album: {
+            images: [
+              {
+                url: '',
+              },
+            ],
+          },
+          artists: [],
+        };
+      }
     }
     return (
       <Router>
