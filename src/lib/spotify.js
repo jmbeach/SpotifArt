@@ -8,7 +8,6 @@ class Spotify {
 
   scopes = ['user-read-currently-playing', 'user-read-playback-state'];
 
-  redirectUri = 'http://localhost:3000/callback';
   redirectUri = 'http://localhost:3001/callback';
 
   refreshToken = null;
@@ -105,18 +104,22 @@ class Spotify {
 
   getNewToken(code) {
     console.log('[spotify]#getNewToken');
-    const { clientId, redirectUri, refreshToken } = this;
-    let url = `https://accounts.spotify.com/api/token`;
+    const { redirectUri, refreshToken } = this;
+    const url = `https://accounts.spotify.com/api/token`;
+    let body = {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+    };
     if (this.refreshToken) {
-      url = `https://accounts.spotify.com/api/token?grant_type=refresh_token&refresh_token=${refreshToken}`;
+      body = {
+        grant_type: 'refresh',
+        refresh_token: refreshToken,
+      };
     }
 
     const request = new Request(url, {
-      body: qs.stringify({
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: redirectUri,
-      }),
+      body: qs.stringify(body),
       method: 'POST',
       headers: new Headers({
         Authorization: `Basic ${this.auth}`,

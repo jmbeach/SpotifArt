@@ -13,7 +13,7 @@ const Callback = () => {
   spotify.handleCallback().then(res => {
     spotify.token = res.access_token;
     spotify.refreshToken = res.refresh_token;
-    localStorage.setItem('access_token', JSON.stringify(res.access_token));
+    localStorage.setItem('token', JSON.stringify(res.access_token));
     localStorage.setItem('refresh_token', JSON.stringify(res.refresh_token));
     const expires = new Date();
     expires.setTime(expires.getTime() + res.expires_in * 1000);
