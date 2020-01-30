@@ -6,17 +6,11 @@ class User extends Component {
     super();
 
     this.handleLogin = this.handleLogin.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
   }
 
   handleLogin() {
     const { login } = this.props;
     login.call(this);
-  }
-
-  handleLogout() {
-    const { logout } = this.props;
-    logout.call(this);
   }
 
   render() {
@@ -41,7 +35,6 @@ User.propTypes = {
     images: PropTypes.array,
   }),
   login: PropTypes.func.isRequired,
-  logout: PropTypes.func.isRequired,
 };
 
 User.defaultProps = {

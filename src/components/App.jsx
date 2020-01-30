@@ -10,7 +10,16 @@ import User from './User';
 const spotify = new Spotify();
 
 const Callback = () => {
-  spotify.handleCallback();
+  spotify.handleCallback().then(res => {
+    spotify.token = res.access_token;
+    spotify.refreshToken = res.refresh_token;
+    localStorage.setItem('access_token', JSON.stringify(res.access_token));
+    localStorage.setItem('refresh_token', JSON.stringify(res.refresh_token));
+    const expires = new Date();
+    expires.setTime(expires.getTime() + res.expires_in * 1000);
+    spotify.expiry = expires;
+    localStorage.setItem('expires', expires);
+  });
   return <Redirect to="/" />;
 };
 
@@ -27,11 +36,6 @@ class App extends Component {
     track: null,
     user: null,
   };
-
-  constructor() {
-    super();
-    this.handleLogout = this.handleLogout.bind(this);
-  }
 
   componentDidMount() {
     this.loadSpotifyData();
@@ -53,6 +57,7 @@ class App extends Component {
   };
 
   loadSpotifyData = () => {
+    const { user } = this.state;
     const cachedTrack = Spotify.getFromCache('track');
     this.setState({
       user: Spotify.getFromCache('user'),
@@ -60,9 +65,11 @@ class App extends Component {
     });
 
     if (spotify.token) {
-      spotify.getCurrentUser().then(user => {
-        this.setState({ user });
-      });
+      if (!user) {
+        spotify.getCurrentUser().then(u => {
+          this.setState({ user: u });
+        });
+      }
 
       spotify.getCurrentTrack().then(track => {
         // TODO: set track image to a "song not playing image"
@@ -73,18 +80,11 @@ class App extends Component {
     if (!cachedTrack || !cachedTrack.item) {
       return;
     }
+
     Vibrant.from(cachedTrack.item.album.images[0].url).getPalette(
       this.handleColorChanged
     );
   };
-
-  handleLogout() {
-    spotify.logout();
-    this.setState({
-      track: null,
-      user: null,
-    });
-  }
 
   render() {
     const { albumColor, user, track, titleColor, progressColor } = this.state;
@@ -127,7 +127,7 @@ class App extends Component {
               />
             </div>
           )}
-          <User user={user} login={spotify.login} logout={this.handleLogout} />
+          <User user={user} login={spotify.login} />
           <Route path="/callback" render={Callback} />
           <Route path="/login" render={Login} />
         </div>

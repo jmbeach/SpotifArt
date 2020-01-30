@@ -1,3 +1,5 @@
+import qs from 'querystring';
+
 class Spotify {
   clientId = '0a34c220b4bd4822b7778e75e3c22422';
 
@@ -7,6 +9,9 @@ class Spotify {
   scopes = ['user-read-currently-playing', 'user-read-playback-state'];
 
   redirectUri = 'http://localhost:3000/callback';
+  redirectUri = 'http://localhost:3001/callback';
+
+  refreshToken = null;
 
   token = null;
 
@@ -17,47 +22,37 @@ class Spotify {
     this.expiry = localStorage.getItem('expiry');
 
     this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
   }
 
   login() {
     window.location.href = this.getAuthUrl();
   }
 
-  logout() {
-    localStorage.clear();
-    this.token = null;
-    this.expiry = null;
-  }
-
   checkAuth() {
-    if (!this.token) {
-      window.location.href = this.getAuthUrl();
+    const self = this;
+    if (!self.token && !self.refreshToken) {
+      window.location.href = self.getAuthUrl();
       return false;
     }
-    if (this.expiry && this.expiry < Date.now()) {
-      const data = this.getNewToken();
-      this.token = data.access_token;
-      this.expiry = data.expires_in;
+    if (self.expiry && self.expiry < Date.now()) {
+      this.getNewToken().then(data => {
+        console.log('[spotify]#checkAuth', data);
+        self.token = data.access_token;
+        if (data.refresh_token) {
+          self.refreshToken = data.refresh_token;
+        }
+
+        self.expiry = data.expires_in;
+      });
     }
     return true;
   }
 
   handleCallback() {
-    const params = Spotify.decodeHash(window.location.hash);
-    if (!params.access_token) {
-      return false;
-    }
-
-    this.token = params.access_token;
-    this.expiry = new Date().setMilliseconds(
-      Date.now() + Number(params.expires_in)
-    );
-
-    localStorage.setItem('token', this.token);
-    localStorage.setItem('expiry', this.expiry);
-
-    return true;
+    // const params = Spotify.decodeHash(window.location.hash);
+    const code = Spotify.getCodeFromUrl();
+    console.log('[spotify]#handleCallback', code);
+    return this.getNewToken(code);
   }
 
   getCurrentUser() {
@@ -81,6 +76,7 @@ class Spotify {
   }
 
   getFromApi(endpoint, key) {
+    console.log('[spotify]#getFromApi', endpoint, key);
     this.checkAuth();
 
     if (!this.token) {
@@ -107,20 +103,29 @@ class Spotify {
       .catch(() => false);
   }
 
-  getNewToken() {
-    const { token, redirectUri } = this;
-    const url = `https://accounts.spotify.com/api/token?grant_type=authorization_code&code=${token}&redirect_uri=${redirectUri}`;
+  getNewToken(code) {
+    console.log('[spotify]#getNewToken');
+    const { clientId, redirectUri, refreshToken } = this;
+    let url = `https://accounts.spotify.com/api/token`;
+    if (this.refreshToken) {
+      url = `https://accounts.spotify.com/api/token?grant_type=refresh_token&refresh_token=${refreshToken}`;
+    }
 
     const request = new Request(url, {
+      body: qs.stringify({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: redirectUri,
+      }),
       method: 'POST',
       headers: new Headers({
-        Authorization: `Basic ${this.clientIdSecretBase64}`,
+        Authorization: `Basic ${this.auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       }),
     });
 
     return fetch(request)
       .then(res => res.json())
-      .then(data => data)
       .catch(() => false);
   }
 
@@ -128,7 +133,7 @@ class Spotify {
     const { token, clientId: id, redirectUri: uri } = this;
     const scopes = this.scopes.join('%20');
     let loginUrl = 'https://accounts.spotify.com/authorize?';
-    loginUrl += '&response_type=token';
+    loginUrl += '&response_type=code';
     loginUrl += `&client_id=${id}`;
     loginUrl += scopes ? `&scope=${scopes}` : '';
     loginUrl += `&redirect_uri=${uri}`;
@@ -147,6 +152,10 @@ class Spotify {
     }
 
     return hashParams;
+  }
+
+  static getCodeFromUrl() {
+    return decodeURIComponent(window.location.href.split('code=')[1]);
   }
 }
 
